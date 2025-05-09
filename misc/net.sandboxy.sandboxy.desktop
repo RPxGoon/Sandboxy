@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Sandboxy
+GenericName=Sandbox Game
+Comment=A free open-source voxel game engine
+Exec=sandboxy
+Icon=sandboxy
+Terminal=false
+Type=Application
+Categories=Game;Simulation;
+Keywords=sandbox;voxel;world;mine;craft;

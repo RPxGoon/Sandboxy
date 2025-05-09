@@ -1,7 +1,27 @@
-Luanti is a voxel-based game platform with multiplayer capabilities.
+Sandboxy is a free open-source voxel game engine that lets you create and explore infinite worlds. Build anything you can imagine with simple building blocks in a vast procedurally generated environment.
 
-The objective of the available games varies, from sandbox games where you can explore, dig and build in a very large voxel world, to arcade-style games.
+Features:
+• Create custom games using the powerful Lua modding API
+• Play online with friends in multiplayer mode
+• Generate infinite procedural worlds
+• Build and destroy blocks in real-time
+• Day/night cycle with dynamic lighting
+• Simple and intuitive touch controls
+• Support for custom texture packs and mods
+• Extensive modding capabilities
+• Cross-platform multiplayer
 
-There is a wide range of built-in map generators for procedurally generated terrain, and voxel-based lighting that adapts to the environment and light sources.
+The game engine is highly extensible through mods, allowing you to:
+• Add new blocks, items and creatures
+• Create custom game modes
+• Modify world generation
+• Add new gameplay mechanics
+• Change graphics and sounds
+• Create adventure maps
 
-All games and mods are written in Lua with a scripting API that is easy to use and makes it easy for modders to get started.
+Join our community:
+• Website: https://www.sandboxy.org
+• Forums: https://forum.sandboxy.org
+• Source code: https://github.com/sandboxyorg/sandboxy
+
+This is free software under the LGPL 2.1 license.

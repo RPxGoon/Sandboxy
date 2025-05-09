@@ -13,8 +13,8 @@ set(GCC_MINIMUM_VERSION "7.5")
 set(CLANG_MINIMUM_VERSION "7.0.1")
 
 # You should not need to edit these manually, use util/bump_version.sh
-set(VERSION_MAJOR 5)
-set(VERSION_MINOR 12)
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 0)
 set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
@@ -397,4 +397,40 @@ if(BUILD_WITH_TRACY)
 	)
 	FetchContent_MakeAvailable(tracy)
 	message(STATUS "Fetching Tracy - done")
+endif()
+
+# Fill in the rest of install paths
+if(NOT SHAREDIR)
+	if(WIN32)
+		set(SHAREDIR ".")
+		set(DOCDIR "doc")
+		set(EXAMPLE_CONF_DIR ".")
+		set(XDG_APPS_DIR ".")
+	else()
+		set(SHAREDIR "${CMAKE_INSTALL_PREFIX}/share/sandboxy")
+		set(DOCDIR "${CMAKE_INSTALL_PREFIX}/share/doc/sandboxy")
+		set(EXAMPLE_CONF_DIR "${CMAKE_INSTALL_PREFIX}/share/doc/sandboxy")
+		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/share/applications")
+	endif()
+endif()
+
+# Create configuration file
+if(WIN32)
+	set(CONFIGPATH "sandboxy.conf.example")
+else()
+	set(CONFIGPATH "${EXAMPLE_CONF_DIR}/sandboxy.conf.example")
+endif()
+
+# Documentation
+install(FILES "README.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/lua_api.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/client_lua_api.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/menu_lua_api.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/texture_packs.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/world_format.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "sandboxy.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
+
+if(UNIX AND NOT APPLE)
+    install(FILES "doc/sandboxy.6" "doc/sandboxyserver.6" DESTINATION "${MANDIR}/man6")
+    install(FILES "misc/net.sandboxy.sandboxy.desktop" DESTINATION "${XDG_APPS_DIR}")
 endif()

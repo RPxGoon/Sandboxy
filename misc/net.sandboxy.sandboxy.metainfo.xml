@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>net.sandboxy.sandboxy</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LGPL-2.1-or-later</project_license>
+  <name>Sandboxy</name>
+  <summary>A free open-source voxel game engine</summary>
+  <description>
+    <p>
+      Sandboxy is an open source voxel game engine with easy modding capabilities.
+      Build anything you can imagine with simple building blocks in a vast world.
+      Create your own games using the powerful Lua API. Join multiplayer servers
+      or host your own server to play with friends.
+    </p>
+  </description>
+  <launchable type="desktop-id">net.sandboxy.sandboxy.desktop</launchable>
+  <provides>
+    <binary>sandboxy</binary>
+  </provides>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://www.sandboxy.org/media/screenshot.jpg</image>
+    </screenshot>
+  </screenshots>
+  <url type="homepage">https://www.sandboxy.org</url>
+  <url type="bugtracker">https://github.com/sandboxyorg/sandboxy/issues</url>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="1.0.0" date="2025-05-09">
+      <description>
+        <p>Initial release of Sandboxy</p>
+      </description>
+    </release>
+  </releases>
+</component>

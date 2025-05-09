@@ -1,1 +1,1 @@
-Voxel-based multiplayer game platform
+A free open-source voxel game engine with powerful modding capabilities.

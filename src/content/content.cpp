@@ -1,4 +1,4 @@
-// Luanti
+// Sandboxy
 // SPDX-License-Identifier: LGPL-2.1-or-later
 // Copyright (C) 2018 rubenwardy <rw@rubenwardy.com>
 
@@ -33,19 +33,19 @@ void parseContentInfo(ContentSpec &spec)
 	switch (getContentType(spec.path)) {
 	case ContentType::MOD:
 		spec.type = "mod";
-		conf_path = spec.path + DIR_DELIM "mod.conf";
+		conf_path = spec.path + DIR_DELIM + "mod.conf";
 		break;
 	case ContentType::MODPACK:
 		spec.type = "modpack";
-		conf_path = spec.path + DIR_DELIM "modpack.conf";
+		conf_path = spec.path + DIR_DELIM + "modpack.conf";
 		break;
 	case ContentType::GAME:
 		spec.type = "game";
-		conf_path = spec.path + DIR_DELIM "game.conf";
+		conf_path = spec.path + DIR_DELIM + "game.conf";
 		break;
 	case ContentType::TXP:
 		spec.type = "txp";
-		conf_path = spec.path + DIR_DELIM "texture_pack.conf";
+		conf_path = spec.path + DIR_DELIM + "texture_pack.conf";
 		break;
 	default:
 		spec.type = "unknown";

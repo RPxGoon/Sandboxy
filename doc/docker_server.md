@@ -1,47 +1,99 @@
-# Docker Container
+# Running a Sandboxy Server with Docker
 
-We provide Sandboxy server Docker images using the GitHub container registry.
+This guide explains how to set up a Sandboxy server using Docker.
 
-## Available Images
+## Quick Start
 
-* `ghcr.io/sandboxy-org/sandboxy:master` (latest build)
-* `ghcr.io/sandboxy-org/sandboxy:<tag>` (specific Git tag)
-* `ghcr.io/sandboxy-org/sandboxy:latest` (latest Git tag, which is the stable release)
-
-See [here](https://github.com/sandboxy-org/sandboxy/pkgs/container/sandboxy) for all available tags.
-
-## Usage
-
-### Quick Start
-
-```bash
-docker run ghcr.io/sandboxy-org/sandboxy:master
+1. Pull the official image:
+```
+docker pull sandboxyorg/sandboxyserver
 ```
 
-### Data persistence
-
-To persist worlds and configuration between container recreation, mount volumes for `/var/lib/sandboxy/` and `/etc/sandboxy/`:
-
-```bash
-docker create -v /home/sandboxy/data/:/var/lib/sandboxy/ -v /home/sandboxy/conf/:/etc/sandboxy/ ghcr.io/sandboxy-org/sandboxy:master
+2. Create a directory for your server data:
+```
+mkdir ~/sandboxyserver
+cd ~/sandboxyserver
 ```
 
-### docker-compose
+3. Start the server:
+```
+docker run -d \
+    --name sandboxyserver \
+    -p 30000:30000/udp \
+    -v $(pwd):/var/lib/sandboxy \
+    sandboxyorg/sandboxyserver
+```
 
-Example `docker-compose.yml`:
+The server will now be running on port 30000.
+
+## Configuration
+
+### Server Settings
+
+Create a `sandboxy.conf` file in your server directory with your settings:
+
+```conf
+name = My Sandboxy Server
+description = Welcome to my server!
+port = 30000
+max_users = 15
+enable_pvp = true
+
+# Game settings
+creative_mode = false
+enable_damage = true
+```
+
+### World Data
+
+World data is stored in:
+```
+/var/lib/sandboxy/worlds/
+```
+
+### Installing Mods
+
+Place mods in:
+```
+/var/lib/sandboxy/mods/
+```
+
+### Docker Compose
+
+Example docker-compose.yml:
 
 ```yaml
-version: "3.8"
-
+version: "3"
 services:
-  sandboxy:
-    image: ghcr.io/sandboxy-org/sandboxy:master
-    container_name: sandboxy
+  sandboxyserver:
+    image: sandboxyorg/sandboxyserver:latest
+    container_name: sandboxyserver
     restart: unless-stopped
     ports:
-      - "30000:30000/udp"  # Game
-      - "30000:30000/tcp"  # Web interface
+      - "30000:30000/udp"
     volumes:
-      - /home/sandboxy/data/:/var/lib/sandboxy/
-      - /home/sandboxy/conf/:/etc/sandboxy/
+      - ./:/var/lib/sandboxy
+```
+
+## Building Custom Server Image
+
+Create a Dockerfile:
+
+```dockerfile
+FROM sandboxyorg/sandboxyserver
+
+# Install additional packages
+RUN apk add --no-cache ...
+
+# Add custom mods
+COPY mods/ /var/lib/sandboxy/mods/
+
+# Add custom configuration
+COPY sandboxy.conf /etc/sandboxy/sandboxy.conf
+```
+
+Build and run:
+```
+docker build -t mysandboxyserver .
+docker run -d --name mysandboxyserver -p 30000:30000/udp mysandboxyserver
 ```

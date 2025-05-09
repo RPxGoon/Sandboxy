@@ -1,2 +1,19 @@
-rootProject.name = "Luanti"
-include ':app', ':native'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+include ':app'
+include ':native'
+
+rootProject.name = "Sandboxy"

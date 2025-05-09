@@ -1,14 +1,51 @@
-.TH SANDBOXYSERVER "6" "May 2025" "sandboxyserver" "Games"
+.TH SANDBOXYSERVER "6" "May 2025" "Sandboxy Server 1.0.0" "Games"
 .SH NAME
 sandboxyserver \- Dedicated server for Sandboxy
 .SH SYNOPSIS
 .B sandboxyserver
-[\fBSERVER OPTIONS\fR]
-[\fBCOMMON OPTIONS\fR]
-[\fBWORLD PATH\fR]
+[\fI\,OPTIONS\/\fR]
 .SH DESCRIPTION
-.B Sandboxy
-is a voxel game engine with easy modding and game creation.
-.B sandboxyserver
-is a dedicated server for Sandboxy.
+Dedicated server for the Sandboxy voxel game engine.
+Run multiplayer servers and host your own games.
+.SH OPTIONS
+.TP
+\fB\-\-help\fR
+Print allowed options and exit
+.TP
+\fB\-\-version\fR
+Print version information and exit
+.TP
+\fB\-\-config\fR <value>
+Load configuration from specified file
+.TP
+\fB\-\-port\fR <value>
+Set network port (UDP) to use (default: 30000)
+.TP
+\fB\-\-gameid\fR <value>
+Load the specified game
+.TP
+\fB\-\-worldname\fR <value>
+Set world path by name
+.TP
+\fB\-\-world\fR <value>
+Set world path
+.SH FILES
+.TP
+/etc/sandboxy/
+System-wide configuration directory
+.TP
+~/.local/share/sandboxy/
+User configuration directory
+.TP
+~/.local/share/sandboxy/worlds/
+Game worlds
+.SH BUGS
+Please report bugs at:
+.br
+https://github.com/sandboxyorg/sandboxy/issues
+.SH AUTHOR
+Copyright \(co 2025 Sandboxy Developers
+.PP
+This is free software; see the source for copying conditions. There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 

@@ -1445,3 +1445,41 @@ function minetest_decode_helper_utf16(tvb, t, lentype, offset, f_textlen, f_text
 		return offset + n + textlen
 	end
 end
+
+-- Protocol
+local p_sandboxy = Proto("sandboxy", "Sandboxy Protocol")
+local vs_seqtype = {[0] = "Original", [1] = "Split"}
+local vs_reliable = {[2] = "Reliable", [3] = "Unreliable"}
+local vs_channel = {[0] = "Control", [1] = "Mod", [2] = "Invalid", [3] = "Chat"}
+
+-- Header fields
+local f_peer = ProtoField.uint16("sandboxy.peer_id", "Peer ID", base.DEC)
+local f_channel = ProtoField.uint8("sandboxy.channel", "Channel", base.DEC, vs_channel)
+local f_type = ProtoField.uint8("sandboxy.type", "Type", base.DEC, vs_reliable)
+local f_subtype = ProtoField.uint8("sandboxy.subtype", "Subtype", base.DEC, vs_type)
+
+p_sandboxy.fields = { f_peer, f_channel, f_type, f_subtype }
+
+function p_sandboxy.dissector(buffer, pinfo, tree)
+    -- Set protocol column
+    pinfo.cols.protocol = "Sandboxy"
+    
+    -- Add Sandboxy tree
+    local t = tree:add(p_sandboxy, buffer(0,8))
+    
+    -- Add fields
+    t:add(f_peer, buffer(4,2))
+    t:add(f_channel, buffer(6,1))
+    t:add(f_type, buffer(7,1))
+    
+    -- Set info column
+    local peer_id = buffer(4,2):uint()
+    local channel = buffer(6,1):uint()
+    t:set_text(string.format("Sandboxy Protocol - Peer: %d, Channel: %d", peer_id, channel))
+    
+    return true
+end
+
+-- Register protocol
+local tcp_port = DissectorTable.get("tcp.port")
+tcp_port:add(30000, p_sandboxy) -- Default Sandboxy port

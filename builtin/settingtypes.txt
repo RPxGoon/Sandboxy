@@ -1020,7 +1020,7 @@ enable_split_login_register (Enable split login/register) bool true
 
 #    URL to JSON file which provides information about the newest Luanti release.
 #    If this is empty the engine will never check for updates.
-update_information_url (Update information URL) string https://www.luanti.org/release_info.json
+update_information_url (Update information URL) string https://api.sandboxy.org/release_info.json
 
 [*Server] [server]
 
@@ -1032,16 +1032,16 @@ name (Admin name) string
 [**Serverlist and MOTD]
 
 #    Name of the server, to be displayed when players join and in the serverlist.
-server_name (Server name) string Luanti server
+server_name (Server name) string Sandboxy server
 
 #    Description of server, to be displayed when players join and in the serverlist.
-server_description (Server description) string mine here
+server_description (Server description) string Welcome to Sandboxy!
 
 #    Domain name of server, to be displayed in the serverlist.
-server_address (Server address) string game.example.net
+server_address (Server address) string game.sandboxy.org
 
 #    Homepage of server, to be displayed in the serverlist.
-server_url (Server URL) string https://game.example.net
+server_url (Server URL) string https://sandboxy.org
 
 #    Automatically report to the serverlist.
 server_announce (Announce server) bool false
@@ -2586,3 +2586,35 @@ show_technical_names (Show technical names) bool false
 
 #    Controlled by a checkbox in the settings menu.
 show_advanced (Show advanced settings) bool false
+
+# Basic game configuration
+name (Player Name) string
+server_address (Server Address) string
+server_port (Server Port) int 30000 1 65535
+enable_ipv6 (Enable IPv6) bool true
+
+# Graphics 
+enable_3d_clouds (3D Clouds) bool true
+opaque_water (Opaque Water) bool false
+node_highlighting (Node Highlighting) bool true
+smooth_lighting (Smooth Lighting) bool true 
+enable_particles (Particles) bool true
+leaves_style (Leaves) enum fancy fancy simple opaque
+gui_scaling (GUI Scale) float 1.0 0.5 2.0
+
+# Performance
+fps_max (FPS Limit) int 60 10 240
+viewing_range (View Range) int 10 3 50
+active_block_range (Active Range) int 2 1 8
+max_simultaneous_block_sends (Block Send Limit) int 40 1 200
+
+# World Generation
+mg_name (Map Generator) enum v7 v7 v6 valleys flat fractal
+creative_mode (Creative Mode) bool false  
+enable_damage (Enable Damage) bool true
+enable_pvp (Enable PvP) bool true
+
+# Server
+server_name (Server Name) string Sandboxy Server
+server_announce (Public Server) bool false
+max_users (Max Players) int 15 1 100

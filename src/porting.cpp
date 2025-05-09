@@ -557,16 +557,15 @@ bool setSystemPaths()
 
 bool setSystemPaths()
 {
-	path_share = STATIC_SHAREDIR;
-	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
-	if (minetest_user_path && minetest_user_path[0] != '\0') {
-		path_user = std::string(minetest_user_path);
-	} else {
-		// TODO: luanti with migration
-		path_user  = std::string(getHomeOrFail()) + DIR_DELIM "."
-			+ "minetest";
-	}
-	return true;
+    path_share = STATIC_SHAREDIR;
+    const char *const user_path = getenv("SANDBOXY_USER_PATH");
+    if (user_path && user_path[0] != '\0') {
+        path_user = std::string(user_path);
+    } else {
+        path_user = std::string(getHomeOrFail()) + DIR_DELIM "."
+            + "sandboxy";
+    }
+    return true;
 }
 
 

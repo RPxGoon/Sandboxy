@@ -1,1 +1,17 @@
-Put your texture pack folders in this folder. Textures in the "server" pack will be used by the server.
+Add your texture packs to this directory.
+
+Texture packs modify the look of the game by replacing textures with your own versions.
+
+Texture pack format:
+- Create a folder in this directory
+- Add your textures in PNG format 
+- Add a texture_pack.conf file with metadata like title and description
+- Optionally add a screenshot.png preview image
+
+Example texture_pack.conf:
+```
+title = High Resolution Pack
+description = Makes the game look fancy with higher res textures
+author = Your Name
+release = 1 
+```

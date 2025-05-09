@@ -1,137 +1,63 @@
-.TH SANDBOXY "6" "May 2025" "sandboxy" "Games"
+.TH SANDBOXY "6" "May 2025" "Sandboxy 1.0.0" "Games"
 
 .SH NAME
-sandboxy \- Multiplayer infinite-world block sandbox
+sandboxy \- A free open-source voxel game engine
 
 .SH SYNOPSIS
 .B sandboxy
-[\fB--server SERVER OPTIONS\fR | \fBCLIENT OPTIONS\fR]
-[\fBCOMMON OPTIONS\fR]
-[\fBWORLD PATH\fR]
-
-.B sandboxyserver
-[\fBSERVER OPTIONS\fR]
-[\fBCOMMON OPTIONS\fR]
-[\fBWORLD PATH\fR]
+[\fI\,OPTIONS\/\fR]
 
 .SH DESCRIPTION
-.B Sandboxy is a voxel game engine with easy modding and game creation.
+Sandboxy is a free open-source voxel game engine with easy modding capabilities.
+Build anything you can imagine with simple building blocks in a vast world.
 
-.SH COMMON OPTIONS
+.SH OPTIONS
 .TP
-.B \-\-help
+\fB\-\-help\fR
 Print allowed options and exit
 .TP
-.B \-\-version
+\fB\-\-version\fR
 Print version information and exit
 .TP
-.B \-\-config <value>
+\fB\-\-config\fR <value>
 Load configuration from specified file
 .TP
-.B \-\-logfile <value>
-Set logfile path ('' for no logging)
-.TP
-.B \-\-info
-Print more information to console
-.TP
-.B \-\-verbose
-Print even more information to console
-.TP
-.B \-\-trace
-Print enormous amounts of information to console
-.TP
-.B \-\-quiet
-Print only errors to console
-.TP
-.B \-\-color <value>
-Colorize the logs ('always', 'never' or 'auto'), defaults to 'auto'
-.TP
-.B \-\-gameid <value> | list
-Set gameid or list available ones
-.TP
-.B \-\-worldname <value>
-Set world path by name
-.TP
-.B \-\-world <value>
-Set world path
-.TP
-.B \-\-worldlist path | name | both
-Get list of worlds ('path' lists paths, 'name' lists names, 'both' lists both)
-.TP
-.B \-\-map\-dir <value>
-Same as \-\-world (deprecated)
-.TP
-.B \-\-port <value>
+\fB\-\-port\fR <value>
 Set network port (UDP) to use
 .TP
-.B \-\-run\-unittests
-Run unit tests and exit
-
-.SH CLIENT OPTIONS
-.TP
-.B \-\-address <value>
-Address to connect to
-.TP
-.B \-\-go
-Disable main menu
-.TP
-.B \-\-name <value>
+\fB\-\-name\fR <value>
 Set player name
 .TP
-.B \-\-password <value>
-Set password
+\fB\-\-gameid\fR <value>
+Request game by its name
 .TP
-.B \-\-password\-file <value>
-Set password from contents of file
+\fB\-\-worldname\fR <value>
+Set world path by name
 .TP
-.B \-\-random\-input
-Enable random user input, for testing (client only)
-.TP
-.TP
-.B \-\-speedtests
-Run speed tests
+\fB\-\-world\fR <value>
+Set world path
 
-.SH SERVER OPTIONS
+.SH FILES
 .TP
-.B \-\-migrate <value>
-Migrate from current map backend to another. Possible values are sqlite3,
-leveldb, redis, postgresql, and dummy.
+~/.local/share/sandboxy/
+User configuration directory
 .TP
-.B \-\-migrate-auth <value>
-Migrate from current auth backend to another. Possible values are sqlite3,
-leveldb, and files.
+~/.local/share/sandboxy/worlds/
+Game worlds
 .TP
-.B \-\-migrate-players <value>
-Migrate from current players backend to another. Possible values are sqlite3,
-leveldb, postgresql, dummy, and files.
+~/.local/share/sandboxy/mods/
+User-installed mods
 .TP
-.B \-\-migrate-mod-storage <value>
-Migrate from current mod storage backend to another. Possible values are
-sqlite3, dummy, and files.
-.TP
-.B \-\-terminal
-Display an interactive terminal over ncurses during execution.
-
-.SH ENVIRONMENT
-.TP
-.B MINETEST_GAME_PATH
-Colon delimited list of directories to search for games.
-.TP
-.B MINETEST_MOD_PATH
-Colon delimited list of directories to search for mods.
-.TP
-.B MINETEST_USER_PATH
-Path to Luanti user data directory.
+~/.local/share/sandboxy/textures/
+User-installed texture packs
 
 .SH BUGS
-Please report all bugs at https://github.com/luanti-org/luanti/issues.
+Please report bugs at:
+.br
+https://github.com/sandboxyorg/sandboxy/issues
 
 .SH AUTHOR
+Copyright \(co 2025 Sandboxy Developers
 .PP
-Perttu Ahola <celeron55@gmail.com> and contributors.
-.PP
-This man page was originally written by
-Juhani Numminen <juhaninumminen0@gmail.com>.
-
-.SH WWW
-http://www.luanti.org/
+This is free software; see the source for copying conditions. There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

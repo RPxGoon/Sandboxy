@@ -18,7 +18,7 @@
 #define MAX_WORLD_NAMES 100
 
 // gameid to assume for worlds that are missing world.mt
-#define LEGACY_GAMEID "minetest"
+#define LEGACY_GAMEID "sandboxy_base"
 
 namespace
 {
@@ -62,21 +62,10 @@ struct GameFindPath
 
 std::string getSubgamePathEnv()
 {
-	static bool has_warned = false;
-	char *subgame_path = getenv("MINETEST_SUBGAME_PATH");
-	if (subgame_path && !has_warned) {
-		warningstream << "MINETEST_SUBGAME_PATH is deprecated, use MINETEST_GAME_PATH instead."
-				<< std::endl;
-		has_warned = true;
-	}
-
-	char *game_path = getenv("MINETEST_GAME_PATH");
-
-	if (game_path)
-		return std::string(game_path);
-	else if (subgame_path)
-		return std::string(subgame_path);
-	return "";
+    char *game_path = getenv("SANDBOXY_GAME_PATH");
+    if (game_path)
+        return std::string(game_path);
+    return "";
 }
 
 static SubgameSpec getSubgameSpec(const std::string &game_id,
@@ -277,8 +266,8 @@ std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
 
 std::string getWorldPathEnv()
 {
-	char *world_path = getenv("MINETEST_WORLD_PATH");
-	return world_path ? std::string(world_path) : "";
+    char *world_path = getenv("SANDBOXY_WORLD_PATH");
+    return world_path ? std::string(world_path) : "";
 }
 
 std::vector<WorldSpec> getAvailableWorlds()
@@ -411,10 +400,10 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 
 std::vector<std::string> getEnvModPaths()
 {
-	const char *c_mod_path = getenv("MINETEST_MOD_PATH");
-	std::vector<std::string> paths;
-	Strfnd search_paths(c_mod_path ? c_mod_path : "");
-	while (!search_paths.at_end())
-		paths.push_back(search_paths.next(PATH_DELIM));
-	return paths;
+    const char *c_mod_path = getenv("SANDBOXY_MOD_PATH");
+    std::vector<std::string> paths;
+    Strfnd search_paths(c_mod_path ? c_mod_path : "");
+    while (!search_paths.at_end())
+        paths.push_back(search_paths.next(PATH_DELIM));
+    return paths;
 }

@@ -868,3 +868,33 @@ function core.parse_coordinates(x, y, z, relative_to)
 	local rz = core.parse_relative_number(z, relative_to.z)
 	return rx and ry and rz and { x = rx, y = ry, z = rz }
 end
+
+-- Initialize common helper functions
+
+-- Core functionality
+core.delayed_callbacks = {}
+
+core.after = function(time, callback)
+    if not callback or type(callback) ~= "function" then
+        return
+    end
+    local job = {
+        time = os.clock() + time,
+        func = callback
+    }
+    table.insert(core.delayed_callbacks, job)
+end
+
+core.process_callbacks = function()
+    local current_time = os.clock()
+    local i = 1
+    while i <= #core.delayed_callbacks do
+        local job = core.delayed_callbacks[i]
+        if current_time >= job.time then
+            job.func()
+            table.remove(core.delayed_callbacks, i)
+        else
+            i = i + 1
+        end
+    end
+end

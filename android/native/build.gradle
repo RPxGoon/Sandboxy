@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'de.undercouch.download'
+apply plugin: 'cpp'
 
 android {
 	ndkVersion "$ndk_version"
@@ -69,4 +70,50 @@ preBuild.dependsOn getDeps
 
 clean {
 	delete new File(buildDir.parent, 'deps')
+}
+
+model {
+    repositories {
+        libs(PrebuiltLibraries) {
+            openal {
+                headers.srcDir "src/openal/include"
+                binaries.withType(SharedLibraryBinary) {
+                    sharedLibraryFile = file("build/openal/obj/local/${targetPlatform.getName()}/libopenal.so")
+                }
+            }
+            irrlicht {
+                headers.srcDir "src/irrlicht/include"
+                binaries.withType(SharedLibraryBinary) {
+                    sharedLibraryFile = file("build/irrlicht/obj/local/${targetPlatform.getName()}/libIrrlicht.so")
+                }
+            }
+        }
+    }
+
+    android.ndk {
+        moduleName = "sandboxy"
+        cppFlags.addAll(["-std=c++17", "-Wall", "-fexceptions", "-frtti"])
+        cppFlags.addAll(["-I${project.rootDir}/native/src"])
+        
+        ldLibs.addAll(["android", "log", "EGL", "GLESv2", "OpenSLES", "z"])
+        stl = "c++_shared"
+    }
+
+    android.sources {
+        main {
+            jni {
+                source {
+                    srcDir "src/main/cpp"
+                }
+                exportedHeaders {
+                    srcDir "src/main/cpp"
+                }
+            }
+        }
+    }
+}
+
+task getDeps(type: Exec) {
+    workingDir '../..'
+    commandLine 'make', '-f', 'android/native/Makefile'
 }
