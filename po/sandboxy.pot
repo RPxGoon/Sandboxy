@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the luanti package.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDERS
+# This file is distributed under the same license as the Sandboxy package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: luanti\n"
+"Project-Id-Version: Sandboxy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-24 16:51+0200\n"
+"POT-Creation-Date: 2025-05-09 12:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
@@ -418,7 +419,7 @@ msgid "Failed to download $1"
 msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "ContentDB is not available when Luanti was compiled without cURL"
+msgid "ContentDB is not available when Sandboxy was compiled without cURL"
 msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
@@ -960,8 +961,8 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
-"For a long time, Luanti shipped with a default game called \"Minetest "
-"Game\". Since version 5.8.0, Luanti ships without a default game."
+"For a long time, Sandboxy shipped with a default game called \"Minetest "
+"Game\". Since version 5.8.0, Sandboxy ships without a default game."
 msgstr ""
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
@@ -1136,12 +1137,12 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid ""
-"Luanti is a game-creation platform that allows you to play many different "
+"Sandboxy is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Luanti doesn't come with a game by default."
+msgid "Sandboxy doesn't come with a game by default."
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
@@ -3049,7 +3050,7 @@ msgid ""
 "Easy to use and well-known from other games that shall not be named.\n"
 "\n"
 "* Long tap\n"
-"Known from the classic Luanti mobile controls.\n"
+"Known from the classic Sandboxy mobile controls.\n"
 "Combat is more or less impossible."
 msgstr ""
 
@@ -4124,7 +4125,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled and you have ContentDB packages installed, Luanti may contact "
+"If enabled and you have ContentDB packages installed, Sandboxy may contact "
 "ContentDB to\n"
 "check for package updates when opening the mainmenu."
 msgstr ""
@@ -4140,8 +4141,8 @@ msgid ""
 "software',\n"
 "as defined by the Free Software Foundation.\n"
 "You can also specify content ratings.\n"
-"These flags are independent from Luanti versions,\n"
-"so see a full list at https://content.luanti.org/help/content_flags/"
+"These flags are independent from Sandboxy versions,\n"
+"so see a full list at https://content.sandboxy.org/help/content_flags/"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4196,7 +4197,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"URL to JSON file which provides information about the newest Luanti "
+"URL to JSON file which provides information about the newest Sandboxy "
 "release.\n"
 "If this is empty the engine will never check for updates."
 msgstr ""
@@ -4349,7 +4350,7 @@ msgid ""
 "expecting.\n"
 "This allows for more fine-grained control than "
 "strict_protocol_version_checking.\n"
-"Luanti still enforces its own internal minimum, and enabling\n"
+"Sandboxy still enforces its own internal minimum, and enabling\n"
 "strict_protocol_version_checking will effectively override this."
 msgstr ""
 
@@ -4388,7 +4389,7 @@ msgstr ""
 msgid "New users need to input this password."
 msgstr ""
 
-#: src/settings_translation_file.cpp
+#: src.settings_translation_file.cpp
 msgid "Disallow empty passwords"
 msgstr ""
 
@@ -6008,7 +6009,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of threads to use for mesh generation.\n"
-"Value of 0 (default) will let Luanti autodetect the number of available "
+"Value of 0 (default) will let Sandboxy autodetect the number of available "
 "threads."
 msgstr ""
 
@@ -6344,7 +6345,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Prometheus listener address.\n"
-"If Luanti is compiled with Prometheus support, this setting\n"
+"If Sandboxy is compiled with Prometheus support, this setting\n"
 "enables the metrics listener for Prometheus on that address.\n"
 "By default you can fetch metrics from http://127.0.0.1:30000/metrics.\n"
 "An empty value disables the metrics listener."
@@ -6879,7 +6880,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Windows systems only: Start Luanti with the command line window in the "
+"Windows systems only: Start Sandboxy with the command line window in the "
 "background.\n"
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""

@@ -1,49 +1,47 @@
-# Docker Server
+# Docker Container
 
-We provide Luanti server Docker images using the GitHub container registry.
+We provide Sandboxy server Docker images using the GitHub container registry.
 
-Images are built on each commit and available using the following tag scheme:
+## Available Images
 
-* `ghcr.io/luanti-org/luanti:master` (latest build)
-* `ghcr.io/luanti-org/luanti:<tag>` (specific Git tag)
-* `ghcr.io/luanti-org/luanti:latest` (latest Git tag, which is the stable release)
+* `ghcr.io/sandboxy-org/sandboxy:master` (latest build)
+* `ghcr.io/sandboxy-org/sandboxy:<tag>` (specific Git tag)
+* `ghcr.io/sandboxy-org/sandboxy:latest` (latest Git tag, which is the stable release)
 
-See [here](https://github.com/luanti-org/luanti/pkgs/container/luanti) for all available tags.
+See [here](https://github.com/sandboxy-org/sandboxy/pkgs/container/sandboxy) for all available tags.
 
-Versions released before the project was renamed are available with the same tag scheme at `ghcr.io/minetest/minetest`.
-See [here](https://github.com/orgs/minetest/packages/container/package/minetest) for all available tags.
+## Usage
 
-For a quick test you can easily run:
+### Quick Start
 
-```shell
-docker run ghcr.io/luanti-org/luanti:master
+```bash
+docker run ghcr.io/sandboxy-org/sandboxy:master
 ```
 
-To use it in a production environment, you should use volumes bound to the Docker host to persist data and modify the configuration:
+### Data persistence
 
-```shell
-docker create -v /home/minetest/data/:/var/lib/minetest/ -v /home/minetest/conf/:/etc/minetest/ ghcr.io/luanti-org/luanti:master
+To persist worlds and configuration between container recreation, mount volumes for `/var/lib/sandboxy/` and `/etc/sandboxy/`:
+
+```bash
+docker create -v /home/sandboxy/data/:/var/lib/sandboxy/ -v /home/sandboxy/conf/:/etc/sandboxy/ ghcr.io/sandboxy-org/sandboxy:master
 ```
 
-You may also want to use [Docker Compose](https://docs.docker.com/compose):
+### docker-compose
+
+Example `docker-compose.yml`:
 
 ```yaml
----
-version: "2"
+version: "3.8"
+
 services:
-  minetest_server:
-    image: ghcr.io/luanti-org/luanti:master
-    restart: always
-    networks:
-      - default
-    volumes:
-      - /home/minetest/data/:/var/lib/minetest/
-      - /home/minetest/conf/:/etc/minetest/
+  sandboxy:
+    image: ghcr.io/sandboxy-org/sandboxy:master
+    container_name: sandboxy
+    restart: unless-stopped
     ports:
-      - "30000:30000/udp"
-      - "127.0.0.1:30000:30000/tcp"
+      - "30000:30000/udp"  # Game
+      - "30000:30000/tcp"  # Web interface
+    volumes:
+      - /home/sandboxy/data/:/var/lib/sandboxy/
+      - /home/sandboxy/conf/:/etc/sandboxy/
 ```
-
-Data will be written to `/home/minetest/data` on the host, and configuration will be read from `/home/minetest/conf/minetest.conf`.
-
-**Note:** If you don't understand the previous commands please read the [official Docker documentation](https://docs.docker.com) before use.

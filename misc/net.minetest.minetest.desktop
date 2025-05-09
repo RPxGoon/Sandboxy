@@ -1,15 +1,15 @@
 [Desktop Entry]
-Name=Luanti
-GenericName=Luanti
-Comment=Block-based multiplayer game platform
+Name=Sandboxy
+GenericName=Voxel Game
+Comment=Multiplayer infinite-world block sandbox game
 Comment[de]=Blockbasierte Mehrspieler-Spieleplattform
 Comment[fr]=Plate-forme de jeu multijoueurs à base de blocs
-Exec=luanti
-Icon=luanti
+Exec=sandboxy
+Icon=sandboxy
 Terminal=false
 PrefersNonDefaultGPU=true
 Type=Application
 Categories=Game;Simulation;
 StartupNotify=false
 StartupWMClass=Luanti
-Keywords=sandbox;world;mining;crafting;blocks;nodes;multiplayer;roleplaying;minetest;
+Keywords=game;sandbox;world;mining;crafting;blocks;nodes;multiplayer;roleplaying;

@@ -1,23 +1,23 @@
-Luanti Lua Client Modding API Reference 5.12.0
+Sandboxy Lua Client Modding API Reference 5.12.0
 ==============================================
 
 **WARNING**: if you're looking for the `minetest` namespace (e.g. `minetest.something`),
-it's now called `core` due to the renaming of Luanti (formerly Minetest).
+it's now called `core` due to the renaming of Sandboxy (formerly Minetest).
 `minetest` will keep existing as an alias, so that old code won't break.
 
-* More information at <http://www.luanti.org/>
-* Developer Wiki: <https://dev.luanti.org/>
+* More information at <http://www.sandboxy.org/>
+* Developer Wiki: <https://dev.sandboxy.org/>
 
 Introduction
 ------------
 
 ** WARNING: The client API is currently unstable, and may break/change without warning. **
 
-Content and functionality can be added to Luanti by using Lua
+Content and functionality can be added to Sandboxy by using Lua
 scripting in run-time loaded mods.
 
 A mod is a self-contained bunch of scripts, textures and other related
-things that is loaded by and interfaces with Luanti.
+things that is loaded by and interfaces with Sandboxy.
 
 Transferring client-sided mods from the server to the client is planned, but not implemented yet.
 
@@ -102,7 +102,7 @@ The location of this directory.
 
 An (optional) settings file that provides meta information about the mod.
 
-* `name`: The mod name. Allows Luanti to determine the mod name even if the
+* `name`: The mod name. Allows Sandboxy to determine the mod name even if the
           folder is wrongly named.
 * `description`: Description of mod to be shown in the Mods tab of the main
                  menu.
@@ -114,7 +114,7 @@ An (optional) settings file that provides meta information about the mod.
 ### `init.lua`
 
 The main Lua script. Running this script should register everything it
-wants to register. Subsequent execution depends on Luanti calling the
+wants to register. Subsequent execution depends on Sandboxy calling the
 registered callbacks.
 
 **NOTE**: Client mods currently can't provide textures, sounds, or models by
@@ -284,7 +284,7 @@ Helper functions
    * the current language code (the same as used for client-side translations)
 * `core.get_version()`: returns a table containing components of the
    engine version.  Components:
-    * `project`: Name of the project, eg, "Luanti"
+    * `project`: Name of the project, eg, "Sandboxy"
     * `string`: Simple version, eg, "1.2.3-dev"
     * `hash`: Full git version (only set if available), eg, "1.2.3-dev-01234567-dirty"
   Use this for informational purposes only. The information in the returned
@@ -972,7 +972,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 
 ```lua
 {
-    address = "luanti.example.org",   -- The domain name/IP address of a remote server or "" for a local server.
+    address = "sandboxy.example.org",   -- The domain name/IP address of a remote server or "" for a local server.
     ip = "203.0.113.156",             -- The IP address of the server.
     port = 30000,                     -- The port the client is connected to.
     protocol_version = 30             -- Will not be accurate at start up as the client might not be connected to the server yet, in that case it will be 0.

@@ -32,22 +32,22 @@ RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp && \
 
 FROM dev as builder
 
-COPY .git /usr/src/luanti/.git
-COPY CMakeLists.txt /usr/src/luanti/CMakeLists.txt
-COPY README.md /usr/src/luanti/README.md
-COPY minetest.conf.example /usr/src/luanti/minetest.conf.example
-COPY builtin /usr/src/luanti/builtin
-COPY cmake /usr/src/luanti/cmake
-COPY doc /usr/src/luanti/doc
-COPY fonts /usr/src/luanti/fonts
-COPY lib /usr/src/luanti/lib
-COPY misc /usr/src/luanti/misc
-COPY po /usr/src/luanti/po
-COPY src /usr/src/luanti/src
-COPY irr /usr/src/luanti/irr
-COPY textures /usr/src/luanti/textures
+COPY .git /usr/src/sandboxy/.git
+COPY CMakeLists.txt /usr/src/sandboxy/CMakeLists.txt
+COPY README.md /usr/src/sandboxy/README.md
+COPY minetest.conf.example /usr/src/sandboxy/minetest.conf.example
+COPY builtin /usr/src/sandboxy/builtin
+COPY cmake /usr/src/sandboxy/cmake
+COPY doc /usr/src/sandboxy/doc
+COPY fonts /usr/src/sandboxy/fonts
+COPY lib /usr/src/sandboxy/lib
+COPY misc /usr/src/sandboxy/misc
+COPY po /usr/src/sandboxy/po
+COPY src /usr/src/sandboxy/src
+COPY irr /usr/src/sandboxy/irr
+COPY textures /usr/src/sandboxy/textures
 
-WORKDIR /usr/src/luanti
+WORKDIR /usr/src/sandboxy
 RUN cmake -B build \
 		-DCMAKE_INSTALL_PREFIX=/usr/local \
 		-DCMAKE_BUILD_TYPE=Release \
@@ -63,20 +63,20 @@ FROM $DOCKER_IMAGE AS runtime
 
 RUN apk add --no-cache curl gmp libstdc++ libgcc libpq jsoncpp zstd-libs \
 				sqlite-libs postgresql hiredis leveldb && \
-	adduser -D minetest --uid 30000 -h /var/lib/minetest && \
-	chown -R minetest:minetest /var/lib/minetest
+	adduser -D sandboxy --uid 30000 -h /var/lib/sandboxy && \
+	chown -R sandboxy:sandboxy /var/lib/sandboxy
 
-WORKDIR /var/lib/minetest
+WORKDIR /var/lib/sandboxy
 
-COPY --from=builder /usr/local/share/luanti /usr/local/share/luanti
-COPY --from=builder /usr/local/bin/luantiserver /usr/local/bin/luantiserver
-COPY --from=builder /usr/local/share/doc/luanti/minetest.conf.example /etc/minetest/minetest.conf
+COPY --from=builder /usr/local/share/sandboxy /usr/local/share/sandboxy
+COPY --from=builder /usr/local/bin/sandboxyserver /usr/local/bin/sandboxyserver
+COPY --from=builder /usr/local/share/doc/sandboxy/minetest.conf /etc/sandboxy/sandboxy.conf
 COPY --from=builder /usr/local/lib/libspatialindex* /usr/local/lib/
 COPY --from=builder /usr/local/lib/libluajit* /usr/local/lib/
-USER minetest:minetest
+USER sandboxy:sandboxy
 
 EXPOSE 30000/udp 30000/tcp
-VOLUME /var/lib/minetest/ /etc/minetest/
+VOLUME /var/lib/sandboxy/ /etc/sandboxy/
 
-ENTRYPOINT ["/usr/local/bin/luantiserver"]
-CMD ["--config", "/etc/minetest/minetest.conf"]
+ENTRYPOINT ["/usr/local/bin/sandboxyserver"]
+CMD ["--config", "/etc/sandboxy/sandboxy.conf"]

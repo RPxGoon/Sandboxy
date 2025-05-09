@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-    <id>net.minetest.minetest</id>
+    <id>net.sandboxy.sandboxy</id>
 
-    <name>Luanti</name>
-    <summary>Block-based multiplayer game platform</summary>
+    <name>Sandboxy</name>
+    <summary>Multiplayer infinite-world block sandbox game</summary>
     <summary xml:lang="de">Blockbasierte Mehrspieler-Spieleplattform</summary>
     <summary xml:lang="fr">Plate-forme de jeu multijoueurs à base de blocs</summary>
 
     <metadata_license>CC0-1.0</metadata_license>
-    <project_license>LGPL-2.1+ AND CC-BY-SA-3.0 AND MIT AND Apache-2.0</project_license>
+    <project_license>LGPL-2.1-or-later</project_license>
 
     <developer id="net.minetest">
         <name>Luanti Team</name>
@@ -53,7 +53,13 @@
 
     <description>
         <p>
-            Luanti is a block-based sandbox game platform.
+            Sandboxy is an infinite-world block sandbox game and game engine.
+            You can build, dig, craft items, and much more!
+        </p>
+        <p>
+            The engine comes with an extensive modding API that allows you to modify
+            the game or create new games entirely in Lua.  The source code is available
+            on GitHub and licensed under LGPL 2.1 or later.
         </p>
         <p xml:lang="de">
             Luanti ist eine blockbasierte Sandbox-Spielplattform.
@@ -119,10 +125,10 @@
         </ul>
     </description>
 
-    <launchable type="desktop-id">net.minetest.minetest.desktop</launchable>
+    <launchable type="desktop-id">net.sandboxy.sandboxy.desktop</launchable>
     <screenshots>
         <screenshot type="default">
-            <image>https://www.luanti.org/media/gallery/1.jpg</image>
+            <image>https://www.sandboxy.org/media/gallery/1.jpg</image>
         </screenshot>
         <screenshot>
             <image>https://www.luanti.org/media/gallery/3.jpg</image>
@@ -150,17 +156,17 @@
         <keyword>roleplaying</keyword>
     </keywords>
 
-    <url type="homepage">https://www.luanti.org</url>
-    <url type="bugtracker">https://www.luanti.org/get-involved/#reporting-issues</url>
-    <url type="translate">https://dev.luanti.org/Translation/</url>
-    <url type="donation">https://www.luanti.org/get-involved/#donate</url>
+    <url type="homepage">https://www.sandboxy.org</url>
+    <url type="bugtracker">https://github.com/sandboxy-org/sandboxy/issues</url>
+    <url type="translate">https://hosted.weblate.org/projects/sandboxy/sandboxy</url>
+    <url type="donation">https://www.sandboxy.org/get-involved</url>
     <url type="faq">https://wiki.luanti.org/FAQ</url>
-    <url type="help">https://wiki.luanti.org</url>
+    <url type="help">https://wiki.sandboxy.org</url>
     <url type="vcs-browser">https://github.com/luanti-org/luanti</url>
     <url type="contribute">https://www.luanti.org/get-involved</url>
 
     <provides>
-        <binary>luanti</binary>
+        <binary>sandboxy</binary>
     </provides>
 
     <translation type="gettext">luanti</translation>
