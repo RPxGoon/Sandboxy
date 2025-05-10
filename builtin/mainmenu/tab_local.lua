@@ -381,82 +381,32 @@ local function get_formspec()
     -- Ensure texture directory is set only once
     if not defaulttexturedir or defaulttexturedir == "" then
         defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" .. DIR_DELIM .. "pack" .. DIR_DELIM
-        core.log("info", "Setting texture directory: " .. defaulttexturedir)
-    end
-    
-    -- Ensure world list is initialized
-    debug_log("Refreshing formspec, checking world list initialization")
-    if not menudata.worldlist then
-        menudata.worldlist = filterlist.create(
-            function()
-                local worlds = core.get_worlds()
-                if type(worlds) ~= "table" then
-                    core.log("error", "core.get_worlds() returned " .. type(worlds))
-                    return {}
-                end
-                return worlds
-            end,
-            compare_worlds,
-            function(element, uid) 
-                return element.name == uid 
-            end,
-            filter_worlds  -- Use our filter function
-        )
-        menudata.worldlist:add_sort_mechanism("alphabetic", sort_worlds_alphabetic)
-        menudata.worldlist:set_sortmode("alphabetic")
-        
-        -- Set initial filter based on current game
-        local game = current_game()
-        if game then
-            menudata.worldlist:set_filtercriteria(game.id)
-        end
-    end
-
-    -- Get current world list
-    local world_list = menudata.worldlist:get_list()
-    local selected = menudata.worldlist:get_current_index()
-    
-    -- Debug world list state
-    debug_log("World list status:")
-    debug_log("- Number of worlds: %d", #world_list)
-    for i, world in ipairs(world_list) do
-        debug_log("- World %d: %s (game: %s)", i, world.name, world.gameid)
-    end
-    
-    -- Debug game selection state
-    local game = current_game()
-    if game then
-        debug_log("Current game: %s", game.id)
-    else
-        debug_log("No game selected")
     end
     
     -- Create basic formspec layout
     local formspec = "size[12,6.5]" ..
-                     "bgcolor[#333333;true]" ..  -- Use solid background
-                     "box[0,0;12,6.5;#222222]" ..  -- Main background
+                    "bgcolor[#000000FF;true]" ..  -- Use solid background
+                    "box[0,0;12,6.5;#222222]" ..  -- Main background
                      
-                     -- World list with proper formspec syntax
-                     "label[0.25,0.1;Select World]" ..
-                     "textlist[0.25,0.5;5.5,5;world_list;"
+                    -- World list with proper formspec syntax
+                    "label[0.25,0.1;Select World]" ..
+                    "textlist[0.25,0.5;5.5,5;world_list;"
     
-    -- Build world list with proper format
+    -- Build world list
+    local world_list = menudata.worldlist:get_list()
     if #world_list > 0 then
         local items = {}
         for i, world in ipairs(world_list) do
-            items[i] = world.name  -- Don't escape names in the array
+            items[i] = core.formspec_escape(world.name)
         end
-        -- Escape the entire string at once
-        formspec = formspec .. core.formspec_escape(table.concat(items, ","))
+        formspec = formspec .. table.concat(items, ",")
     else
         formspec = formspec .. "No worlds available"
     end
     
     -- Add selection and transparency
-    formspec = formspec .. ";" .. 
-        tostring(selected or 1) .. ";" ..  -- Current selection
-        "false" ..                         -- Not transparent
-        "]"                               -- Close textlist
+    local selected = menudata.worldlist:get_current_index()
+    formspec = formspec .. ";" .. tostring(selected or 1) .. ";false]"
     
     -- Add world info and controls on the right
     if selected and selected > 0 and selected <= #world_list then
@@ -473,9 +423,10 @@ local function get_formspec()
             -- Game settings
             "label[6,2.5;Game Settings:]" ..
             "checkbox[6,3;cb_creative;Creative Mode;" .. 
-                (core.settings:get_bool("creative_mode") and "true" or "false") .. "]" ..
+                tostring(core.settings:get_bool("creative_mode")) .. "]" ..
             "checkbox[6,3.5;cb_damage;Enable Damage;" .. 
-                (core.settings:get_bool("enable_damage") and "true" or "false") .. "]" ..
+                tostring(core.settings:get_bool("enable_damage")) .. "]" ..
+            
             -- Action buttons
             "button[6,4.5;5.5,0.8;btn_play;Play Game]" ..
             "button[6,5.5;2.5,0.8;btn_configure_world;Configure]" ..
@@ -528,63 +479,16 @@ local function launch_world(world_index, gui_settings)
         return false
     end
     
-    -- Set up environment for launch
-    debug_log("Launching world: %s (game: %s)", world.name, world.gameid)
-    
-    -- Ensure world settings are properly synchronized
-    local worldconfig = pkgmgr.get_worldconfig(world.path)
-    if worldconfig then
-        debug_log("LAUNCH: World config loaded from %s", world.path)
-        if worldconfig.creative_mode then
-            core.settings:set("creative_mode", worldconfig.creative_mode)
-            debug_log("LAUNCH: Setting creative_mode from world.mt: %s", worldconfig.creative_mode)
-        else
-            -- Set default values for devtest game
-            if world.gameid == "devtest" then
-                core.settings:set("creative_mode", "true")
-                debug_log("LAUNCH: Setting default creative_mode=true for devtest")
-            end
-        end
-        if worldconfig.enable_damage then
-            core.settings:set("enable_damage", worldconfig.enable_damage)
-            debug_log("LAUNCH: Setting enable_damage from world.mt: %s", worldconfig.enable_damage)
-        else
-            -- Set default values for devtest game
-            if world.gameid == "devtest" then
-                core.settings:set("enable_damage", "false") 
-                debug_log("LAUNCH: Setting default enable_damage=false for devtest")
-            end
-        end
-    else
-        debug_log("LAUNCH: No world config found at %s", world.path)
-        -- Create minimal world.mt file if it doesn't exist
-        local filename = world.path .. DIR_DELIM .. "world.mt"
-        if not core.file_exists(filename) then
-            debug_log("LAUNCH: Creating minimal world.mt file")
-            local worldfile = Settings(filename)
-            worldfile:set("backend", "sqlite3")
-            worldfile:set("player_backend", "files")
-            worldfile:set("auth_backend", "files")
-            worldfile:set("gameid", world.gameid)
-            if world.gameid == "devtest" then
-                worldfile:set("creative_mode", "true")
-                worldfile:set("enable_damage", "false")
-            end
-            worldfile:write()
-            debug_log("LAUNCH: Created default world.mt file")
-        end
-    end
-    
     -- Ensure world path is absolute and exists
+    local abs_world_path = world.path
     if not world.path:find("^/") then
-        -- Convert to absolute path if needed
-        world.path = core.get_user_path() .. DIR_DELIM .. "worlds" .. DIR_DELIM .. world.name
-        debug_log("LAUNCH: Converted to absolute path: %s", world.path)
+        abs_world_path = core.get_user_path() .. DIR_DELIM .. "worlds" .. DIR_DELIM .. world.name
+        debug_log("LAUNCH: Converted to absolute path: %s", abs_world_path)
     end
     
     -- Verify world directory exists
-    if not core.file_exists(world.path) then
-        debug_log("LAUNCH ERROR: World path doesn't exist: %s", world.path)
+    if not core.file_exists(abs_world_path) then
+        debug_log("LAUNCH ERROR: World path doesn't exist: %s", abs_world_path)
         gamedata.errormessage = "World directory not found: " .. world.name
         return false
     end
@@ -604,34 +508,32 @@ local function launch_world(world_index, gui_settings)
         end
     end
     
-    -- Set world and game context
-    core.settings:set("menu_last_game", game.id)
-    debug_log("LAUNCH: Set menu_last_game to %s", game.id)
-    
-    core.settings:set("mainmenu_last_selected_world", world_index)
-    debug_log("LAUNCH: Set mainmenu_last_selected_world to %d", world_index)
-    
-    -- Set player name if not already set
-    if core.settings:get("name") == "" then
-        core.settings:set("name", "singleplayer")
-        debug_log("LAUNCH: Set default player name to 'singleplayer'")
-    end
-    
-    -- Configure world parameters
-    if type(menu_worldmt_legacy) == "function" then
-        pcall(menu_worldmt_legacy, world_index)
-        debug_log("LAUNCH: Applied legacy world settings")
-    end
-    
-    -- Force save any settings we've changed
-    core.settings:write()
-    debug_log("LAUNCH: Saved settings")
-    
-    -- Set game data for the engine
+    -- Set required game data for launching
     gamedata.selected_world = world_index
     gamedata.selected_game = game.id
+    gamedata.world_path = abs_world_path
+    
+    -- Save configuration to world.mt if it doesn't exist
+    local worldconfig_path = abs_world_path .. DIR_DELIM .. "world.mt"
+    if not core.file_exists(worldconfig_path) then
+        local worldfile = Settings(worldconfig_path)
+        worldfile:set("backend", "sqlite3")
+        worldfile:set("player_backend", "files")
+        worldfile:set("auth_backend", "files")
+        worldfile:set("gameid", game.id)
+        worldfile:set("creative_mode", tostring(core.settings:get_bool("creative_mode")))
+        worldfile:set("enable_damage", tostring(core.settings:get_bool("enable_damage")))
+        worldfile:write()
+        debug_log("LAUNCH: Created world.mt file")
+    end
+    
+    -- Force save settings before launch
+    core.settings:set("menu_last_game", game.id)
+    core.settings:set("mainmenu_last_selected_world", world_index)
+    core.settings:write()
     
     -- Start the game
+    debug_log("LAUNCH: Starting game with world_path: %s, game_id: %s", abs_world_path, game.id)
     core.start()
     
     return true
