@@ -6,9 +6,11 @@
 
 local function get_formspec()
     local version = core.get_version()
+    -- Format version table into a string
+    local version_str = version.string or (tostring(version.major) .. "." .. tostring(version.minor) .. "." .. tostring(version.patch))
     
     local text = [[
-Sandboxy ]] .. version .. [[
+Sandboxy ]] .. version_str .. [[
 
 A free open-source voxel game engine with powerful modding capabilities.
 

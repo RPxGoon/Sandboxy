@@ -10,20 +10,42 @@ GAMEBAR_H = 1.25
 GAMEBAR_OFFSET_DESKTOP = 0.375
 GAMEBAR_OFFSET_TOUCH = 0.15
 
+-- Initialize core globals with explicit declarations
+_G.menudata = {}  -- Properly declare menudata as a global
+_G.gamedata = {}  -- Properly declare gamedata as a global
+_G.serverlistmgr = {}  -- Properly declare serverlistmgr as a global
+
+-- Initialize core data structures
+menudata.worldlist = nil  -- Will be initialized later
+gamedata.worldindex = 0
+serverlistmgr.servers = {}
+serverlistmgr.favorites = {}
+serverlistmgr.get_favorites = function() return serverlistmgr.favorites end
+serverlistmgr.init_done = false
+
 local menupath = core.get_mainmenu_path()
 local basepath = core.get_builtin_path()
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 					DIR_DELIM .. "pack" .. DIR_DELIM
+-- Ensure global texture directory is consistent throughout the application
+_G.defaulttexturedir = defaulttexturedir
 
 -- Load required modules
 dofile(basepath .. "common" .. DIR_DELIM .. "menu.lua")
 dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
+
+-- Load UI framework in the correct order (ui.lua must be before dialog.lua)
+dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
 dofile(menupath .. DIR_DELIM .. "async_event.lua")
 dofile(menupath .. DIR_DELIM .. "common.lua")
+
+-- Serverlistmgr is already initialized at the top of the file
+-- No need to reinitialize it here
+
+-- Now load the serverlistmgr after initializing required variables
 dofile(menupath .. DIR_DELIM .. "serverlistmgr.lua")
 dofile(menupath .. DIR_DELIM .. "game_theme.lua")
 
@@ -42,10 +64,240 @@ dofile(menupath .. DIR_DELIM .. "dlg_server_list_mods.lua")
 
 -- Load tab definitions
 local tabs = {
-	content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua"),
-	about = dofile(menupath .. DIR_DELIM .. "tab_about.lua"),
-	local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua"),
-	play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
+    local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua"),
+    multiplayer = {
+        name = "multiplayer",
+        caption = "Multiplayer",
+        get_formspec = function()
+            return {
+                name = "multiplayer",
+                caption = "Multiplayer",
+                tabsize = {x = 15.5, y = 7},
+                content = {
+                    background = "menu_bg.png",
+                    containers = {
+                        {
+                            x = 0.2, y = 0.2, w = 15.1, h = 6.3,
+                            name = "multiplayer_info",
+                            bgcolor = "#FFFFFF",
+                            style = "container",
+                            elements = {
+                                {
+                                    type = "label",
+                                    x = 0.2, y = 0.2,
+                                    label = "Multiplayer Not Configured",
+                                    style = "label_header"
+                                },
+                                {
+                                    type = "textarea",
+                                    x = 0.2, y = 1.0, w = 14.7, h = 4.0,
+                                    name = "multiplayer_message",
+                                    label = "",
+                                    default = "Multiplayer features are currently disabled.\n\nServer configuration needs to be set up before multiplayer features can be enabled.",
+                                    bgcolor = "#F5F5F5"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        end,
+        handle_buttons = function() return false end
+    },
+    content = {
+        name = "content",
+        caption = "Content",
+        get_formspec = function()
+            return {
+                name = "content",
+                caption = "Content",
+                tabsize = {x = 15.5, y = 7},
+                content = {
+                    background = "menu_bg.png",
+                    buttons = {
+                        {
+                            bgcolor = "#1976D2",
+                            h = 0.5,
+                            label = "Sandboxy Content Browser",
+                            name = "header",
+                            style = "header",
+                            w = 15.5,
+                            x = 0,
+                            y = 0
+                        },
+                        {
+                            x = 0.3, y = 6.8,
+                            w = 2.5, h = 0.5,
+                            name = "btn_install",
+                            label = "Install",
+                            bgcolor = "#4CAF50"
+                        },
+                        {
+                            x = 3.0, y = 6.8,
+                            w = 2.5, h = 0.5,
+                            name = "btn_download",
+                            label = "Download",
+                            bgcolor = "#2196F3"
+                        },
+                        {
+                            x = 5.7, y = 6.8,
+                            w = 2.5, h = 0.5,
+                            name = "btn_uninstall",
+                            label = "Uninstall",
+                            bgcolor = "#F44336"
+                        }
+                    },
+                    containers = {
+                        {
+                            x = 0.2, y = 1.0, w = 7.5, h = 5.7,
+                            bgcolor = "#FFFFFF",
+                            style = "box",
+                            name = "content_list",
+                            elements = {
+                                {
+                                    type = "list",
+                                    x = 0.2, y = 0.2,
+                                    w = 7.1, h = 5.3,
+                                    name = "pkg_list",
+                                    bgcolor = "#F5F5F5"
+                                }
+                            }
+                        },
+                        {
+                            x = 8.0, y = 1.0, w = 7.3, h = 5.7,
+                            bgcolor = "#FFFFFF",
+                            style = "box",
+                            name = "content_details",
+                            elements = {
+                                {
+                                    type = "textarea",
+                                    x = 0.2, y = 0.2,
+                                    w = 6.9, h = 5.3,
+                                    name = "pkg_details",
+                                    label = "",
+                                    default = "Select a content package to view details",
+                                    bgcolor = "#F5F5F5"
+                                }
+                            }
+                        }
+                    },
+                    search = {
+                        bgcolor = "#FFFFFF",
+                        default = "Search...",
+                        h = 0.4,
+                        label = "",
+                        name = "search",
+                        w = 7.1,
+                        x = 8.1,
+                        y = 0.2
+                    }
+                }
+            }
+        end,
+        handle_buttons = function(fields)
+            if fields.search then
+                -- Handle search
+                return true
+            end
+            
+            if fields.pkg_list then
+                -- Handle package selection
+                return true
+            end
+            
+            if fields.btn_install then
+                -- Handle install
+                return true
+            end
+            
+            if fields.btn_download then
+                -- Handle download
+                return true
+            end
+            
+            if fields.btn_uninstall then
+                -- Handle uninstall
+                return true
+            end
+            
+            return false
+        end
+    },
+    about = {
+        name = "about",
+        caption = "About",
+        get_formspec = function()
+            return {
+                name = "about",
+                caption = "About",
+                tabsize = {x = 15.5, y = 7},
+                content = {
+                    background = "menu_bg.png",
+                    containers = {
+                        {
+                            x = 0.2, y = 0.2, w = 15.1, h = 6.3,
+                            name = "about_container",
+                            bgcolor = "#FFFFFF",
+                            style = "container",
+                            elements = {
+                                {
+                                    type = "label",
+                                    x = 0.2, y = 0.2,
+                                    label = "Sandboxy",
+                                    style = "label_header"
+                                },
+                                {
+                                    type = "textarea",
+                                    x = 0.2, y = 0.8, w = 14.7, h = 4.5,
+                                    name = "about_text",
+                                    label = "",
+                                    default = 
+[[Sandboxy 5.12.0-dev
+
+A free open-source voxel game engine with powerful modding capabilities.
+
+Website: https://www.sandboxy.org
+Source code: https://github.com/sandboxyorg/sandboxy
+Forums: https://forum.sandboxy.org
+
+Contributors
+---------------
+See our GitHub repository for a full list of contributors.
+
+License
+---------
+Licensed under GNU LGPL v2.1 or later.
+See LICENSE.txt and COPYING.LESSER for more details.
+
+Credits
+---------
+- Original game engine based on Minetest
+- Textures: CC BY-SA 3.0
+- Sounds: CC BY 3.0
+- Font: Arimo and Cousine (Apache License 2.0)]],
+                                    bgcolor = "#F5F5F5"
+                                },
+                                {
+                                    type = "button",
+                                    x = 12, y = 5.5, w = 3, h = 0.5,
+                                    name = "btn_credits",
+                                    label = "View Credits",
+                                    bgcolor = "#2196F3"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        end,
+        handle_buttons = function(fields)
+            if fields.btn_credits then
+                -- Could implement a more detailed credits dialog here
+                return true
+            end
+            return false
+        end
+    }
 }
 
 --------------------------------------------------------------------------------
@@ -59,9 +311,9 @@ end
 --------------------------------------------------------------------------------
 local function init_globals()
 	-- Init gamedata
-	gamedata.worldindex = 0
-
-	menudata.worldlist = filterlist.create(
+-- gamedata and menudata are already initialized at the top of the file
+-- Just update any properties that might have changed
+menudata.worldlist = filterlist.create(
 		core.get_worlds,
 		compare_worlds,
 		-- Unique id comparison function
@@ -87,16 +339,15 @@ local function init_globals()
 	
 	-- Add tabs with correct size format
 	for _, tab in pairs(tabs) do
-		if tab.size then
-			-- Convert from width/height to x/y if needed
-			if tab.size.width and tab.size.height then
-				tab.size = {x = tab.size.width, y = tab.size.height}
-			end
-		elseif tab.tabsize then
-			-- Use tabsize if defined instead of size
-			tab.size = tab.tabsize
-		end
-		tv_main:add(tab)
+		local tab_copy = {
+			name = tab.name,
+			caption = tab.caption,
+			cbf_formspec = tab.get_formspec,
+			cbf_button_handler = tab.handle_buttons,
+			cbf_events = tab.handle_events,
+			size = tab.tabsize -- Map tabsize to size as expected by tabview
+		}
+		tv_main:add(tab_copy)
 	end
 
 	tv_main:set_global_event_handler(main_event_handler)
@@ -128,8 +379,6 @@ local function init_globals()
 	check_new_version()
 end
 
-assert(os.execute == nil)
-
 -- Initialize core functions first
 core.after = function(time, callback)
     if not callback or type(callback) ~= "function" then
@@ -142,108 +391,25 @@ core.after = function(time, callback)
     table.insert(core.delayed_callbacks or {}, job)
 end
 
+-- Initialize event handling functions
+core.receive_fields_callbacks = {}
+core.register_on_receive_fields = function(callback)
+    if callback and type(callback) == "function" then
+        table.insert(core.receive_fields_callbacks, callback)
+    end
+end
+
+-- Function to process form field events
+core.handle_received_fields = function(player, formname, fields)
+    for _, callback in ipairs(core.receive_fields_callbacks) do
+        if callback(player, formname, fields) then
+            return true
+        end
+    end
+    return false
+end
+
 -- Now load the rest of the menu system
 dofile(core.get_mainmenu_path() .. DIR_DELIM .. "async_event.lua")
 
 init_globals()
-
--- Sandboxy main menu
-
-local menupath = core.get_mainmenu_path()
-local modstore = menupath .. "modstore.json"
-
--- Global menu data
-menu = {}
-menu.id = "main"
-menu.title = "Sandboxy"
-menu.version = core.get_version()
-
-function menu.init()
-    menu.data = {}
-    menu.clouds = true
-    menu.node_highlighting = true
-    menu.server_list = {}
-    menu.selected_server = 0
-    menu.favorites = {}
-    menu.games = {}
-    menu.mods = {}
-    menu.world_list = {}
-    menu.selected_world = 0
-    menu.worldconfig = {}
-end
-
--- Menu pages
-menu.pages = {
-    "header",
-    "play",
-    "multiplayer",
-    "settings", 
-    "mods",
-    "texturepacks",
-    "worlds",
-    "credits"
-}
-
--- Page handlers
-menu.handle_play = function(...)
-    -- Play button handler
-end
-
-menu.handle_multiplayer = function(...)
-    -- Multiplayer button handler  
-end
-
-menu.handle_settings = function(...)
-    -- Settings button handler
-end
-
-menu.handle_mods = function(...)
-    -- Mods button handler
-end
-
-menu.handle_texturepacks = function(...)
-    -- Texture packs button handler
-end
-
-menu.handle_worlds = function(...)
-    -- Worlds button handler
-end
-
-menu.handle_credits = function(...)
-    -- Credits button handler
-end
-
--- Menu formspec
-function menu.get_formspec()
-    local formspec = "size[12,7]"
-    formspec = formspec .. "background[0,0;12,7;menu_bg.png]"
-    formspec = formspec .. "image[5,1;2,2;menu_logo.png]"
-    formspec = formspec .. "label[5,3.2;Sandboxy " .. menu.version .. "]"
-    
-    -- Menu buttons
-    local btn_y = 3.8
-    for i, page in ipairs(menu.pages) do
-        if page ~= "header" then
-            formspec = formspec .. "button[4," .. btn_y .. ";4,0.8;" .. 
-                      page .. ";" .. core.formspec_escape(page:gsub("^%l", string.upper)) .. "]"
-            btn_y = btn_y + 0.9
-        end
-    end
-    
-    return formspec
-end
-
--- Initialize menu when game starts
-menu.init()
-
--- Register callbacks
-core.register_on_receive_fields(function(player, formname, fields)
-    if formname ~= "" then return end
-    
-    for page, handler in pairs(menu) do
-        if fields[page] and type(handler) == "function" then
-            handler(player, fields)
-            return true
-        end
-    end
-end)

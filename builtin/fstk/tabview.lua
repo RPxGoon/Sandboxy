@@ -84,7 +84,9 @@ local function get_formspec(self)
 	local formspec = (prepend or "")
 	formspec = formspec .. ("bgcolor[;neither]container[0,%f]box[0,0;%f,%f;#0000008C]"):format(
 			TABHEADER_H, orig_tsize.width, orig_tsize.height)
-	formspec = formspec .. self:tab_header(tab_header_size) .. content
+	-- Ensure content is a string before concatenation
+	local content_str = type(content) == "table" and dump(content) or tostring(content)
+	formspec = formspec .. self:tab_header(tab_header_size) .. content_str
 
 	if self.end_button then
 		formspec = formspec ..

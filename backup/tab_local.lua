@@ -166,6 +166,31 @@ local function refresh_worldlist()
     end
     
     return true
+}
+        
+        -- Now safely proceed with selection
+        local list_size = menudata.worldlist:size()
+        local last_selected = menudata.worldlist:get_current_index()
+        
+        if last_selected and last_selected > 0 and last_selected <= list_size then
+            menudata.worldlist:set_current_index(last_selected)
+            debug_log("Restored selection to index %d", last_selected)
+        elseif list_size > 0 then
+            menudata.worldlist:set_current_index(1)
+            debug_log("Set selection to first world")
+        end
+    end
+    
+    -- Try to set selection and handle any errors
+    local status, err = pcall(safe_set_selection)
+    if not status then
+        debug_log("Error setting world selection: %s", tostring(err))
+        
+        -- Fallback to direct index selection for UI
+        selected_world_index = 1
+    end
+    
+    return true
 end
 
 -- Helper function for creating and showing dialogs
@@ -628,13 +653,6 @@ local function launch_world(world_index, gui_settings)
     debug_log("LAUNCH: Saved settings")
     
     -- Set game data for the engine
-    gamedata.selected_world = world_index
-    gamedata.selected_game = game.id
-    
-    -- Start the game
-    core.start()
-    
-    return true
 end
 
 local function handle_buttons(fields)
@@ -731,88 +749,84 @@ local function handle_buttons(fields)
     if fields.btn_play and not fields.btn_play_disabled then
         debug_log("BUTTON CLICK: Play button clicked")
         
-        -- Get selected world or create new one
-        local selected = menudata.worldlist:get_current_index()
-        local world_list = menudata.worldlist:get_list()
+        -- Get the selected world index from either the method or our backup variable
+        local selected
         
-        -- If no valid selection, create a new world
-        if not selected or selected <= 0 or selected > #world_list then
-            local new_world_name = "world_" .. os.time()
-            debug_log("No world selected, creating new world: " .. new_world_name)
+        if type(menudata.worldlist.get_current_index) == "function" then
+            local status, result = pcall(function()
+                local idx = menudata.worldlist:get_current_index()
+                debug_log("Got current index from filterlist: %s", tostring(idx))
+                return idx
+            end)
             
-            -- Create world directory
-            local world_path = core.get_worldpath() .. DIR_DELIM .. new_world_name
-            core.create_dir(world_path)
-            
-            -- Create basic world.mt
-            local worldfile = Settings(world_path .. DIR_DELIM .. "world.mt")
-            worldfile:set("backend", "sqlite3")
-            worldfile:set("player_backend", "files")
-            worldfile:set("auth_backend", "files")
-            worldfile:set("gameid", "devtest")
-            worldfile:set("creative_mode", "true")
-            worldfile:set("enable_damage", "false")
-            worldfile:write()
-            
-            -- Refresh world list and select new world
-            refresh_worldlist()
-            world_list = menudata.worldlist:get_list()
-            for i, world in ipairs(world_list) do
-                if world.name == new_world_name then
-                    selected = i
-                    break
-                end
-            end
-        end
-        
-        -- Launch the game with selected world
-        if selected and selected > 0 and selected <= #world_list then
-            local world = world_list[selected]
-            debug_log("Launching world: " .. world.name)
-            
-            -- Get the GUI settings from checkboxes if they exist
-            local gui_settings = {}
-            if fields.cb_creative ~= nil then
-                gui_settings.creative_mode = fields.cb_creative == "true"
+            if status and result and result > 0 then
+                selected = result
+                debug_log("Using filterlist index: %d", selected)
             else
-                gui_settings.creative_mode = true
-            end
-            if fields.cb_damage ~= nil then
-                gui_settings.enable_damage = fields.cb_damage == "true"
-            else
-                gui_settings.enable_damage = false
-            end
-            
-            -- Use our direct launching function
-            local success = launch_world(selected, gui_settings)
-            
-            if not success then
-                debug_log("BUTTON CLICK ERROR: Failed to launch world %d", selected)
-                
-                -- Fallback direct launch in case launch_world fails
-                gamedata.selected_world = selected
-                gamedata.selected_game = "devtest"
-                
-                -- Force save any settings
-                core.settings:set("creative_mode", "true")
-                core.settings:set("enable_damage", "false")
-                core.settings:write()
-                
-                -- Start the game directly
-                core.start()
-            else
-                debug_log("BUTTON CLICK: Successfully launched world %d", selected)
+                selected = selected_world_index
+                debug_log("Using fallback index: %d", selected)
             end
         else
-            -- Ultimate fallback - just start with default world
-            debug_log("ULTIMATE FALLBACK: Starting with default world")
-            gamedata.selected_game = "devtest"
-            core.settings:set("creative_mode", "true")
-            core.settings:set("enable_damage", "false")
-            core.settings:write()
-            core.start()
+            selected = selected_world_index
+            debug_log("Using direct index: %d", selected)
         end
         
+        debug_log("BUTTON CLICK: Selected world index for launch: %d", selected)
+        
+        if selected > 0 then
+            local world_list = menudata.worldlist:get_list()
+            if selected <= #world_list then
+                debug_log("BUTTON CLICK: Using direct launch function for world index %d", selected)
+                
+                -- Get the GUI settings from checkboxes if they exist
+                local gui_settings = {}
+                if fields.cb_creative ~= nil then
+                    gui_settings.creative_mode = fields.cb_creative == "true"
+                end
+                if fields.cb_damage ~= nil then
+                    gui_settings.enable_damage = fields.cb_damage == "true"
+                end
+                
+                -- Use our direct launching function
+                local success = launch_world(selected, gui_settings)
+                
+                if not success then
+                    debug_log("BUTTON CLICK ERROR: Failed to launch world %d", selected)
+                    -- Error message already set by launch_world
+                else
+                    debug_log("BUTTON CLICK: Successfully launched world %d", selected)
+                end
+                
+                -- Always return true to indicate we've handled the button press
+                return true
+            else
+                debug_log("BUTTON CLICK ERROR: Selected index %d out of bounds (max: %d)", 
+                          selected, #world_list)
+                gamedata.errormessage = "Invalid world selection"
+                return true
+            end
+        else
+            debug_log("BUTTON CLICK ERROR: No world selected (index=%d)", selected)
+            gamedata.errormessage = "Please select a world first"
+            return true
+        end
+                
+                -- Ensure world settings are properly synchronized
+                local worldconfig = pkgmgr.get_worldconfig(world.path)
+                if worldconfig then
+                    if worldconfig.creative_mode then
+                        core.settings:set("creative_mode", worldconfig.creative_mode)
+                        debug_log("Setting creative_mode from world.mt: %s", worldconfig.creative_mode)
+                    end
+                    if worldconfig.enable_damage then
+                        core.settings:set("enable_damage", worldconfig.enable_damage)
+                        debug_log("Setting enable_damage from world.mt: %s", worldconfig.enable_damage)
+                    end
+                end
+                
+                -- Apply game settings
+                core.settings:set("menu_last_game", game.id)  -- Use game.id instead of world.gameid
+                
         return true
     end
 

@@ -35,6 +35,74 @@ do
 	math.randomseed(seed)
 end
 
+-- Initialize core callbacks system
+core.register_on_connect = function(callback)
+    core.connect_callbacks = core.connect_callbacks or {}
+    table.insert(core.connect_callbacks, callback)
+end
+
+core.run_connect_callbacks = function()
+    for _, callback in ipairs(core.connect_callbacks or {}) do
+        callback()
+    end
+end
+
+core.register_on_disconnect = function(callback)
+    core.disconnect_callbacks = core.disconnect_callbacks or {}
+    table.insert(core.disconnect_callbacks, callback)
+end
+
+core.run_disconnect_callbacks = function()
+    for _, callback in ipairs(core.disconnect_callbacks or {}) do
+        callback()
+    end
+end
+
+-- Set up basic event system
+core.callback_origins = {}
+core.registered_on_callbacks = {}
+
+core.register_on = function(name, callback)
+    core.registered_on_callbacks[name] = core.registered_on_callbacks[name] or {}
+    table.insert(core.registered_on_callbacks[name], callback)
+end
+
+core.run_callbacks = function(name, ...)
+    local callbacks = core.registered_on_callbacks[name]
+    if callbacks then
+        for _, callback in ipairs(callbacks) do
+            callback(...)
+        end
+    end
+end
+
+-- Add pause menu specific callbacks
+core.register_on_pause_menu = function(callback)
+    core.pause_menu_callbacks = core.pause_menu_callbacks or {}
+    table.insert(core.pause_menu_callbacks, callback)
+end
+
+core.run_pause_menu_callbacks = function()
+    for _, callback in ipairs(core.pause_menu_callbacks or {}) do
+        callback()
+    end
+end
+
+-- Add form field handling callbacks
+core.register_on_receive_fields = function(callback)
+    core.receive_fields_callbacks = core.receive_fields_callbacks or {}
+    table.insert(core.receive_fields_callbacks, callback)
+end
+
+core.run_receive_fields_callbacks = function(player, formname, fields)
+    for _, callback in ipairs(core.receive_fields_callbacks or {}) do
+        if callback(player, formname, fields) then
+            return true
+        end
+    end
+    return false
+end
+
 minetest = core
 
 -- Load other files

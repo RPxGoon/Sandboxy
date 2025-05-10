@@ -64,6 +64,10 @@ function filterlist.create(raw_fct,compare_fct,uid_match_fct,filter_fct,fetch_pa
 	self.uid_exists_raw     = filterlist.uid_exists_raw
 	self.raw_index_by_uid   = filterlist.raw_index_by_uid
 	self.refresh            = filterlist.refresh
+	self.set_current_index  = filterlist.set_current_index
+
+	-- Initialize the current index
+	self.m_current_index = 1
 
 	filterlist.process(self)
 
@@ -146,6 +150,14 @@ end
 function filterlist.get_current_index(self,listindex)
 	assert(self.m_processed_list ~= nil)
 
+	-- First check if we have a stored index
+	if self.m_current_index ~= nil and 
+	   self.m_current_index > 0 and 
+	   self.m_current_index <= #self.m_processed_list then
+		return self.m_current_index
+	end
+
+	-- Fall back to the old implementation as backup
 	if listindex ~= nil and listindex > 0 and
 		listindex <= #self.m_raw_list then
 		local entry = self.m_raw_list[listindex]
@@ -158,6 +170,14 @@ function filterlist.get_current_index(self,listindex)
 		end
 	end
 
+	-- Try to restore from settings
+	local saved_index = tonumber(core.settings:get("mainmenu_last_selected_world"))
+	if saved_index and saved_index > 0 and saved_index <= #self.m_processed_list then
+		self.m_current_index = saved_index
+		return saved_index
+	end
+
+	-- No valid index found
 	return 0
 end
 
@@ -165,9 +185,27 @@ end
 function filterlist.process(self)
 	assert(self.m_raw_list ~= nil)
 
+	-- Store the current index for restoring after processing
+	local previous_index = nil
+	if self.m_processed_list and self.m_current_index and 
+	   self.m_current_index > 0 and self.m_current_index <= #self.m_processed_list then
+		previous_index = self.m_processed_list[self.m_current_index]
+	end
+
 	if self.m_sortmode == "none" and
 		self.m_filtercriteria == nil then
 		self.m_processed_list = self.m_raw_list
+		
+		-- Make sure we restore the index
+		if previous_index then
+			for i, v in ipairs(self.m_processed_list) do
+				if self.m_compare_fct(v, previous_index) then
+					self.m_current_index = i
+					break
+				end
+			end
+		end
+		
 		return
 	end
 
@@ -188,6 +226,22 @@ function filterlist.process(self)
 		type(self.m_sort_list[self.m_sortmode]) == "function" then
 
 		self.m_sort_list[self.m_sortmode](self)
+	end
+	
+	-- Try to restore the previous index after processing
+	if previous_index then
+		for i, v in ipairs(self.m_processed_list) do
+			if self.m_compare_fct(v, previous_index) then
+				self.m_current_index = i
+				break
+			end
+		end
+	end
+	
+	-- If we have no current index but have entries, set to first one
+	if (not self.m_current_index or self.m_current_index < 1 or 
+	    self.m_current_index > #self.m_processed_list) and #self.m_processed_list > 0 then
+		self.m_current_index = 1
 	end
 end
 
@@ -229,6 +283,22 @@ function filterlist.raw_index_by_uid(self, uid)
 	end
 
 	return elementidx
+end
+
+--------------------------------------------------------------------------------
+-- Add missing set_current_index function
+function filterlist.set_current_index(self, idx)
+	if type(idx) ~= "number" then
+		idx = tonumber(idx)
+	end
+
+	if idx == nil or idx < 1 or idx > #self.m_processed_list then
+		return false
+	end
+
+	self.m_current_index = idx
+	core.settings:set("mainmenu_last_selected_world", idx)
+	return true
 end
 
 --------------------------------------------------------------------------------

@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# Create a 256x256 dark blue-gray menu background image
+# This script creates a simple PNG file with a dark professional appearance
+
+# The base64 string below represents a 256x256 pixel PNG with a dark blue-gray gradient
+# It was created specifically for use as a menu background
+
+echo "Creating menu_bg.png for Sandboxy..."
+
+# Base64 encoded PNG data (dark blue-gray gradient)
+cat > /tmp/menu_bg_b64.txt << 'EOF'
+iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAACXBIWXMAAAsTAAALEwEAmpwYAAAF
+HGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0w
+TXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRh
+LyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDIgNzkuMTYwOTI0LCAyMDE3LzA3LzEz
+LTAxOjA2OjM5ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3Jn
+LzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0i
+IiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRw
+Oi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMu
+YWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNv
+bS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9z
+VHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0Mg
+MjAxOCAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDI1LTA1LTA5VDIwOjMwOjMwLTA0OjAw
+IiB4bXA6TW9kaWZ5RGF0ZT0iMjAyNS0wNS0wOVQyMDozMTozMC0wNDowMCIgeG1wOk1ldGFkYXRh
+RGF0ZT0iMjAyNS0wNS0wOVQyMDozMTozMC0wNDowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHBo
+b3Rvc2hvcDpDb2xvck1vZGU9IjMiIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2
+LTIuMSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1YmNmOTg5NS1jYzQwLTQxNzMtOWQ0ZS03
+YWMyMGYyODZhOTQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NWJjZjk4OTUtY2M0MC00MTcz
+LTlkNGUtN2FjMjBmMjg2YTk0IiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6NWJj
+Zjk4OTUtY2M0MC00MTczLTlkNGUtN2FjMjBmMjg2YTk0Ij4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6
+U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1w
+LmlpZDo1YmNmOTg5NS1jYzQwLTQxNzMtOWQ0ZS03YWMyMGYyODZhOTQiIHN0RXZ0OndoZW49IjIw
+MjUtMDUtMDlUMjA6MzA6MzAtMDQ6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rv
+c2hvcCBDQyAyMDE4IChXaW5kb3dzKSIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPC9y
+ZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIi
+Pz7AKfMJAAAGIklEQVR4nO3dMW4cRxiG4a+yFFjSFfBQOeRUkRNU51D2hZxDEtBIibO4tIDKyQIo
+A4JzALKwwfSMdkez/X+znufJFkUCiwEfYHb++W92dHFxMeF+Z7MHgOcJADECQIwAECMAxAgAMQJA
+jAAQIwDECAAxx7MH4GU7PT3dut7Mx/e63W5nj1DBAYDZ3r7e+vnk5OTOx+8cHNz/19HRWz9fXW1c
+z8Y6AOQYADECQIwAECMAxAgAMQJAjAAQIwDECAAxx7MH4Gnbjp/LdvL9zvbt5LvdYCffwcHZg7f/
+zW42zv5PnQMAMQJAjAAQIwDECAAxxlmAzdYYqX1X5OPjvf7VvXN1JQDkOAAQIwDECAAxxlmAh3v/
+vjWGPT19b+t6O25/PHbr3N39tnH92+PH/+R/V1cC4ABAjAAQIwDE7BwH+Hzx58M/vX3cyvVLbr9y
+vV3/s3W9XX+wdb3dH2xdb8cn9647y+77d69f71xv15837kM4uv1+63r3S+Mag3EAyDEAYgSAGAEg
+xgCIMQBiBIAYASBGAIgRAGLm7gR8f9+7v9/6dBPLznv4W17vcuu5b07q5nqkL+9m+3pzvXG983xT
+u8+3f1l//4b5HACIEQBiBICYfnGAZYeOLm8dAD5ePDyxmwX0FxxY0Lzr+8H1b3ev+ztw997nqj7b
+uX7zS+cq3+vLFjyLHQAHAGIEgBgBIOZw9gADGnfw9rAMndu//bTz/HfP7HE/wMqGvc9bf20dd3T3
+ffyX58v+1q99OQAQIwDECAAxB8vSO5PwYrza8+xGsM01mXdvwuvdxz++Hr/wbMsm3DfX6+7p+HSz
+bGG7vl5vZz1edk3j0D3+yWY7yq8NBwBiBIAYASBGAIgxAGIMgBgBIEYAiBEAYsZ3Am7vODy4vSOw
+89zG1WH3P//Nss5vze+uva/j3+P76zHv4HQAIEYAiBEAYsZ3Aq7ckPNm2eG9l/HGf2VeG4A9cAAg
+RgCIEQBiZsYBVp2fv+y67mXnzdftY4PtbsXnOwetCywrtdcz3/1mXmffzT3HxgdyzgGAGAEgRgCI
+EQBiDIAYAyBGAIgRAGIEgJjjvZ7d2cX38c1k73bz3//8o/n2Ls9vfnqwn7Obaf37FeauPRwX13AA
+IEYAiBEAYg5nD/AwF22rrs8bO7yfwK57LvfeEdhXzXtytyxbd1hzr8RDOQAQIwDECAAx45d27b13
+uW5j18Z9zd09r/Xk9K4KrLom4IEdiqPPHMQBgBgBIEYAiBkfB3h2LjqHs+8tBH19fbTsnrynLR+2
+/z1e+PQCy76x2t53Gr5ZZ1+CAwAxAkCMABBjAMQYADECQIwAECMAxAgAMcfr3G39+wa7/5O71V13
+fO+i9Ny139JK3+Puc89vRtOurxsdAIgRAGIEgJjjB9/P/3nd3XT7HtbsPPH1ZebTg4MDx2v49VYn
+OAAQIwDECAAxw+MAJzvXyxaMl+8x6B1zOj2dXndd37B0Lds/9LyKAwAxAkCMABAzPg7w9r3+8/Pz
+u7+w8pnb+p4XNdcEjlv9jgLd5/7/k/vmOQAQIwDECAAxw+MAd9/w+OfmF9c/FLTuOea+B4jWte6+
+iFU3+31c9XpW5gBAjAAQIwDEjI8D3Hl/wLttu6hWPZ/8kvvwLyvuxWjtCbivcYB1OQAQIwDECAAx
+BkCMARAjAMQIADECQIwAEHO07l3XP0x3dvvj2XZnYXcvYHcP4HovW78nsLcPcf0OAAzgAECMABBz
+NHuAne92fX59ddl9X9l63+e6eytXPT2gt1+ht6/iqXIAIEYAiBEAYnbGAZb9vrH9l8YK7FyPGp8n
+Wce+x/t3jx8MWm/CvdIrN9J1dgKuyQGAGAEgRgCIEQBiDIAYAyBGAIgRAGIEgJhltx3+F+q76P7q
+ZAp3/i+vr293rlc9+dR9aXRH4GMPYy3jAECMABAjAMQsh4/8Nd3RuO+6/4Lna9n3DkX7Dl7+PYH7
+8gBAjAAQIwDEHL58ecxZ1sr12wE7lwPGne/r3M/5gNMLrv+/aNl9fZyFvnUOAMQIADECQMz458cD
+H88egBgHAGIEgBgBIEYAiBEAYgSAGAEgRgCIEQBiBICYfwHCZGrDXRvDNgAAAABJRU5ErkJggg==
+EOF
+
+# Decode the base64 data to create the PNG file
+base64 -d /tmp/menu_bg_b64.txt > textures/base/pack/menu_bg.png
+
+# Output success message and file size
+echo "menu_bg.png created successfully!"
+echo "File size: $(stat -c%s textures/base/pack/menu_bg.png) bytes"
+echo "Location: $(realpath textures/base/pack/menu_bg.png)"
+
+# Clean up temporary file
+rm /tmp/menu_bg_b64.txt
+
+# Make sure blank.png is also working correctly
+echo "Checking blank.png..."
+if [ $(stat -c%s textures/base/pack/blank.png) -lt 100 ]; then
+  echo "blank.png seems too small ($(stat -c%s textures/base/pack/blank.png) bytes), creating a new one..."
+  
+  # Create a simple white 32x32 PNG for blank.png
+  cat > /tmp/blank_b64.txt << 'EOF'
+iVBORw0KGgoAAAANSUhE
+

@@ -6,6 +6,22 @@ local gamepath   = scriptpath .. "game".. DIR_DELIM
 -- not exposed to outer context
 local builtin_shared = {}
 
+-- Initialize core callbacks
+if not core.register_on_newworld then
+    core.register_on_newworld = function(callback)
+        core.newworld_callbacks = core.newworld_callbacks or {}
+        table.insert(core.newworld_callbacks, callback)
+    end
+end
+
+if not core.run_newworld_callbacks then
+    core.run_newworld_callbacks = function()
+        for _, callback in ipairs(core.newworld_callbacks or {}) do
+            callback()
+        end
+    end
+end
+
 dofile(gamepath .. "constants.lua")
 assert(loadfile(commonpath .. "item_s.lua"))(builtin_shared)
 assert(loadfile(gamepath .. "item.lua"))(builtin_shared)

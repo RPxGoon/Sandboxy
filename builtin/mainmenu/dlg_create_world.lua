@@ -295,8 +295,7 @@ local function create_world_formspec(dialogdata)
 			"container[0,3.5]" ..
 			"box[0,0;5.8,1.7;#ff8800]" ..
 			"textarea[0.4,0.1;6,1.8;;;"..
-			fgettext("Development Test is meant for developers.") .. "]" ..
-			"button[1,1;4,0.5;world_create_open_cdb;" .. fgettext("Install another game") .. "]" ..
+			fgettext("Development Test has limited UI functionality. The world will work but UI interactions may require patience.") .. "]" ..
 			"container_end[]"
 	end
 
@@ -384,6 +383,14 @@ local function create_world_buttonhandler(this, fields)
 				mgvalleys_spflags = table_to_flags(this.data.flags.valleys),
 				mgflat_spflags = table_to_flags(this.data.flags.flat),
 			}
+
+			-- Add additional world configuration settings for better compatibility
+			if game.id == "devtest" then
+				settings.creative_mode = "true"
+				settings.enable_damage = "false"
+				settings.auth_backend = "files"
+			end
+			
 			message = core.create_world(worldname, game.id, settings)
 		end
 

@@ -274,13 +274,24 @@ local function handle_buttons(this, fields)
 		local worldfile = Settings(filename)
 		local mods = worldfile:to_table()
 
+		-- Ensure basic required settings exist
+		if not worldfile:get("backend") then
+			worldfile:set("backend", "sqlite3")
+		end
+		if not worldfile:get("player_backend") then
+			worldfile:set("player_backend", "files")
+		end
+		if not worldfile:get("auth_backend") then
+			worldfile:set("auth_backend", "files")
+		end
+
 		local rawlist = this.data.list:get_raw_list()
 		local was_set = {}
 
+		-- Process mod configuration
 		for i = 1, #rawlist do
 			local mod = rawlist[i]
-			if not mod.is_modpack and
-					not mod.is_game_content then
+			if not mod.is_modpack and not mod.is_game_content then
 				if modname_valid(mod.name) then
 					if mod.enabled then
 						worldfile:set("load_mod_" .. mod.name, mod.virtual_path)
@@ -289,10 +300,7 @@ local function handle_buttons(this, fields)
 						worldfile:remove("load_mod_" .. mod.name)
 					end
 				elseif mod.enabled then
-					gamedata.errormessage = fgettext_ne("Failed to enable mo" ..
-							"d \"$1\" as it contains disallowed characters. " ..
-							"Only characters [a-z0-9_] are allowed.",
-							mod.name)
+					gamedata.errormessage = fgettext_ne("Failed to enable mod \"$1\" as it contains disallowed characters. Only characters [a-z0-9_] are allowed.", mod.name)
 				end
 				mods["load_mod_" .. mod.name] = nil
 			end
@@ -305,6 +313,7 @@ local function handle_buttons(this, fields)
 			end
 		end
 
+		-- Save changes to world.mt
 		if not worldfile:write() then
 			core.log("error", "Failed to write world config file")
 		end

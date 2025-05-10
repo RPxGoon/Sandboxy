@@ -2,6 +2,21 @@
 -- Copyright (C) 2014 sapier
 -- SPDX-License-Identifier: LGPL-2.1-or-later
 
+-- Initialize menudata if not already done
+if not menudata then menudata = {} end
+if not menudata.favorites then
+    menudata.favorites = {
+        list = {},
+        current_index = 0,
+        get_list = function(self) return self.list end,
+        get_current_index = function(self) return self.current_index end,
+        set_current_index = function(self, index) self.current_index = index end
+    }
+end
+if not menudata.public_servers then
+    menudata.public_servers = {}
+end
+
 local function get_sorted_servers()
 	local servers = {
 		fav = {},
@@ -9,10 +24,18 @@ local function get_sorted_servers()
 		incompatible = {}
 	}
 
-	local favs = serverlistmgr.get_favorites()
+	local favs = {}
+	if serverlistmgr and serverlistmgr.get_favorites then
+		favs = serverlistmgr.get_favorites() or {}
+	end
 	local taken_favs = {}
-	local result = menudata.search_result or serverlistmgr.servers
-	for _, server in ipairs(result) do
+	local result = {}
+	if menudata and menudata.search_result then
+		result = menudata.search_result
+	elseif serverlistmgr and serverlistmgr.servers then
+		result = serverlistmgr.servers
+	end
+	for _, server in ipairs(result or {}) do
 		server.is_favorite = false
 		for index, fav in ipairs(favs) do
 			if server.address == fav.address and server.port == fav.port then
@@ -46,7 +69,11 @@ local function is_selected_fav(server)
 	local address = core.settings:get("address")
 	local port = tonumber(core.settings:get("remote_port"))
 
-	for _, fav in ipairs(serverlistmgr.get_favorites()) do
+	local favs = {}
+	if serverlistmgr and serverlistmgr.get_favorites then
+		favs = serverlistmgr.get_favorites() or {}
+	end
+	for _, fav in ipairs(favs) do
 		if address == fav.address and port == fav.port then
 			return true
 		end
@@ -75,12 +102,19 @@ end
 local function find_selected_server()
 	local address = core.settings:get("address")
 	local port = tonumber(core.settings:get("remote_port"))
-	for _, server in ipairs(serverlistmgr.servers) do
-		if server.address == address and server.port == port then
-			return server
+	if serverlistmgr and serverlistmgr.servers then
+		for _, server in ipairs(serverlistmgr.servers) do
+			if server.address == address and server.port == port then
+				return server
+			end
 		end
 	end
-	for _, server in ipairs(serverlistmgr.get_favorites()) do
+	
+	local favs = {}
+	if serverlistmgr and serverlistmgr.get_favorites then
+		favs = serverlistmgr.get_favorites() or {}
+	end
+	for _, server in ipairs(favs) do
 		if server.address == address and server.port == port then
 			return server
 		end
@@ -90,7 +124,9 @@ end
 -- Sandboxy multiplayer tab
 
 local function get_formspec()
-    local selected_server = menudata.favorites:get_current_index()
+    -- Get server list safely
+    local servers = get_sorted_servers()
+    local selected_server = menudata.favorites:get_current_index() or 0
     local search_string = core.settings:get("serversearch") or ""
     
     local tab = {
@@ -170,9 +206,10 @@ end
 
 local function handle_buttons(fields)
     if fields.btn_join_server then
-        local selected = menudata.favorites:get_current_index()
+        local selected = menudata.favorites:get_current_index() or 0
         if selected > 0 then
             local server = menudata.favorites:get_list()[selected]
+            if not server then return true end
             gamedata.address = server.address
             gamedata.port = server.port
             gamedata.selected_world = 0
@@ -188,9 +225,10 @@ local function handle_buttons(fields)
     end
 
     if fields.btn_delete_favorite then
-        local selected = menudata.favorites:get_current_index()
+        local selected = menudata.favorites:get_current_index() or 0
         if selected > 0 then
             local server = menudata.favorites:get_list()[selected]
+            if not server then return true end
             local dlg = create_delete_favorite_dlg(server)
             dlg:show()
         end
@@ -204,12 +242,48 @@ local function handle_buttons(fields)
     end
 
     if fields.btn_refresh then
+        -- Initialize required structures if they don't exist
+        if not menudata then menudata = {} end
+        if not menudata.favorites then
+            menudata.favorites = {
+                list = {},
+                current_index = 0,
+                get_list = function(self) return self.list end,
+                get_current_index = function(self) return self.current_index end,
+                set_current_index = function(self, index) self.current_index = index end
+            }
+        end
+        
+        -- Initialize serverlistmgr if not already done
+        if not serverlistmgr then
+            serverlistmgr = {
+                servers = {},
+                favorites = {},
+                get_favorites = function() return serverlistmgr.favorites end
+            }
+        end
+        
         core.handle_async("get_serverlist", {
             url = core.settings:get("serverlist_url") or 
                   "https://servers.sandboxy.org"
         }, function(result)
             if result and result.list then
-                menudata.public_servers = result.list
+                menudata.public_servers = result.list or {}
+                -- Initialize serverlistmgr.servers if needed
+                if not serverlistmgr.servers then
+                    serverlistmgr.servers = {}
+                end
+                
+                -- Update the server list
+                for _, server in ipairs(menudata.public_servers) do
+                    -- Add to serverlistmgr.servers
+                    table.insert(serverlistmgr.servers, server)
+                    
+                    -- Add public servers to the favorites list if needed
+                    if menudata.favorites and menudata.favorites.list then
+                        table.insert(menudata.favorites.list, server)
+                    end
+                end
                 core.event_handler({
                     type = "serverlist_updated"
                 })
@@ -228,9 +302,10 @@ end
 
 local function on_change(type, old_index, new_index)
     if type == "ENTER" then
-        local selected = menudata.favorites:get_current_index()
+        local selected = menudata.favorites:get_current_index() or 0
         if selected > 0 then
             local server = menudata.favorites:get_list()[selected]
+            if not server then return true end
             gamedata.address = server.address
             gamedata.port = server.port
             gamedata.selected_world = 0
